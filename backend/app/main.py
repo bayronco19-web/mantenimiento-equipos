@@ -4,7 +4,7 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse
 import os
 from .database import engine, Base
-from .routers import auth, equipment, maintenance, work_orders, inventory, lifecycle, alerts, dashboard, reports
+from .routers import auth, equipment, maintenance, work_orders, inventory, lifecycle, alerts, dashboard, reports, price_comparison
 
 Base.metadata.create_all(bind=engine)
 
@@ -41,6 +41,7 @@ app.include_router(lifecycle.router, prefix=API_PREFIX)
 app.include_router(alerts.router, prefix=API_PREFIX)
 app.include_router(dashboard.router, prefix=API_PREFIX)
 app.include_router(reports.router, prefix=API_PREFIX)
+app.include_router(price_comparison.router, prefix=API_PREFIX)
 
 
 @app.get("/health")

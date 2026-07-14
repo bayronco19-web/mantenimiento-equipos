@@ -195,6 +195,57 @@ export interface Alert {
   equipment?: Equipment
 }
 
+// ─── COMPARADOR DE PRECIOS ───────────────────────────────────────────────────
+export type StoreType = 'online' | 'hybrid' | 'physical'
+
+export interface PriceCategory {
+  id: number
+  name: string
+  description?: string
+  icon?: string
+}
+
+export interface Store {
+  id: number
+  name: string
+  store_type: StoreType
+  website_url?: string
+  logo_url?: string
+  reputation_rating: number
+  reputation_reviews_count: number
+  notes?: string
+}
+
+export interface ProductOffer {
+  id: number
+  product_id: number
+  store_id: number
+  seller_name?: string
+  price: number
+  currency: string
+  product_url: string
+  in_stock: boolean
+  reputation_rating?: number
+  reputation_reviews_count?: number
+  last_checked?: string
+  notes?: string
+  store: Store
+}
+
+export interface Product {
+  id: number
+  name: string
+  category_id?: number
+  brand?: string
+  sku?: string
+  description?: string
+  image_url?: string
+  created_at?: string
+  category?: PriceCategory
+  offers: ProductOffer[]
+  best_price?: number
+}
+
 export interface DashboardStats {
   total_equipment: number
   active_equipment: number

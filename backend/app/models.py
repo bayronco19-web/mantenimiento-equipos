@@ -66,6 +66,12 @@ class AlertStatus(str, enum.Enum):
     resolved = "resolved"
 
 
+class StoreType(str, enum.Enum):
+    online = "online"
+    hybrid = "hybrid"
+    physical = "physical"
+
+
 # ─── USERS & TECHNICIANS ─────────────────────────────────────────────────────
 
 class User(Base):
@@ -370,3 +376,64 @@ class Alert(Base):
 
     equipment = relationship("Equipment", back_populates="alerts")
     consumable = relationship("Consumable", back_populates="alerts")
+
+
+# ─── COMPARADOR DE PRECIOS ───────────────────────────────────────────────────
+
+class PriceCategory(Base):
+    __tablename__ = "price_categories"
+    id = Column(Integer, primary_key=True, index=True)
+    name = Column(String(100), nullable=False)
+    description = Column(Text)
+    icon = Column(String(50))
+
+    products = relationship("Product", back_populates="category")
+
+
+class Store(Base):
+    __tablename__ = "stores"
+    id = Column(Integer, primary_key=True, index=True)
+    name = Column(String(150), nullable=False, unique=True)
+    store_type = Column(SAEnum(StoreType), default=StoreType.online)
+    website_url = Column(String(500))
+    logo_url = Column(String(500))
+    reputation_rating = Column(Float, default=0.0)  # 0-5
+    reputation_reviews_count = Column(Integer, default=0)
+    notes = Column(Text)
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+
+    offers = relationship("ProductOffer", back_populates="store", cascade="all, delete-orphan")
+
+
+class Product(Base):
+    __tablename__ = "products"
+    id = Column(Integer, primary_key=True, index=True)
+    name = Column(String(250), nullable=False, index=True)
+    category_id = Column(Integer, ForeignKey("price_categories.id"))
+    brand = Column(String(100))
+    sku = Column(String(100))
+    description = Column(Text)
+    image_url = Column(String(500))
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+
+    category = relationship("PriceCategory", back_populates="products")
+    offers = relationship("ProductOffer", back_populates="product", cascade="all, delete-orphan")
+
+
+class ProductOffer(Base):
+    __tablename__ = "product_offers"
+    id = Column(Integer, primary_key=True, index=True)
+    product_id = Column(Integer, ForeignKey("products.id"), nullable=False)
+    store_id = Column(Integer, ForeignKey("stores.id"), nullable=False)
+    seller_name = Column(String(150))  # vendedor dentro de un marketplace, si aplica
+    price = Column(Float, nullable=False)
+    currency = Column(String(10), default="USD")
+    product_url = Column(String(1000), nullable=False)  # link directo al producto
+    in_stock = Column(Boolean, default=True)
+    reputation_rating = Column(Float)  # override de la reputación de la tienda (0-5)
+    reputation_reviews_count = Column(Integer)
+    last_checked = Column(DateTime(timezone=True), server_default=func.now())
+    notes = Column(Text)
+
+    product = relationship("Product", back_populates="offers")
+    store = relationship("Store", back_populates="offers")

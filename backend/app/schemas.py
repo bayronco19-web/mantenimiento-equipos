@@ -3,7 +3,7 @@ from typing import Optional, List
 from datetime import date, datetime
 from .models import (
     UserRole, EquipmentStatus, Criticality, MaintenanceType,
-    WorkOrderStatus, WorkOrderPriority, AlertType, AlertStatus
+    WorkOrderStatus, WorkOrderPriority, AlertType, AlertStatus, StoreType
 )
 
 
@@ -419,6 +419,126 @@ class AlertOut(BaseModel):
     status: AlertStatus
     created_at: Optional[datetime] = None
     equipment: Optional[EquipmentOut] = None
+    model_config = {"from_attributes": True}
+
+
+# ─── COMPARADOR DE PRECIOS ───────────────────────────────────────────────────
+
+class PriceCategoryCreate(BaseModel):
+    name: str
+    description: Optional[str] = None
+    icon: Optional[str] = None
+
+
+class PriceCategoryOut(BaseModel):
+    id: int
+    name: str
+    description: Optional[str] = None
+    icon: Optional[str] = None
+    model_config = {"from_attributes": True}
+
+
+class StoreCreate(BaseModel):
+    name: str
+    store_type: StoreType = StoreType.online
+    website_url: Optional[str] = None
+    logo_url: Optional[str] = None
+    reputation_rating: float = 0.0
+    reputation_reviews_count: int = 0
+    notes: Optional[str] = None
+
+
+class StoreUpdate(BaseModel):
+    name: Optional[str] = None
+    store_type: Optional[StoreType] = None
+    website_url: Optional[str] = None
+    logo_url: Optional[str] = None
+    reputation_rating: Optional[float] = None
+    reputation_reviews_count: Optional[int] = None
+    notes: Optional[str] = None
+
+
+class StoreOut(BaseModel):
+    id: int
+    name: str
+    store_type: StoreType
+    website_url: Optional[str] = None
+    logo_url: Optional[str] = None
+    reputation_rating: float
+    reputation_reviews_count: int
+    notes: Optional[str] = None
+    model_config = {"from_attributes": True}
+
+
+class ProductOfferCreate(BaseModel):
+    store_id: int
+    seller_name: Optional[str] = None
+    price: float
+    currency: str = "USD"
+    product_url: str
+    in_stock: bool = True
+    reputation_rating: Optional[float] = None
+    reputation_reviews_count: Optional[int] = None
+    notes: Optional[str] = None
+
+
+class ProductOfferUpdate(BaseModel):
+    seller_name: Optional[str] = None
+    price: Optional[float] = None
+    currency: Optional[str] = None
+    product_url: Optional[str] = None
+    in_stock: Optional[bool] = None
+    reputation_rating: Optional[float] = None
+    reputation_reviews_count: Optional[int] = None
+    notes: Optional[str] = None
+
+
+class ProductOfferOut(BaseModel):
+    id: int
+    product_id: int
+    store_id: int
+    seller_name: Optional[str] = None
+    price: float
+    currency: str
+    product_url: str
+    in_stock: bool
+    reputation_rating: Optional[float] = None
+    reputation_reviews_count: Optional[int] = None
+    last_checked: Optional[datetime] = None
+    notes: Optional[str] = None
+    store: StoreOut
+    model_config = {"from_attributes": True}
+
+
+class ProductCreate(BaseModel):
+    name: str
+    category_id: Optional[int] = None
+    brand: Optional[str] = None
+    sku: Optional[str] = None
+    description: Optional[str] = None
+    image_url: Optional[str] = None
+
+
+class ProductUpdate(BaseModel):
+    name: Optional[str] = None
+    category_id: Optional[int] = None
+    brand: Optional[str] = None
+    sku: Optional[str] = None
+    description: Optional[str] = None
+    image_url: Optional[str] = None
+
+
+class ProductOut(BaseModel):
+    id: int
+    name: str
+    category_id: Optional[int] = None
+    brand: Optional[str] = None
+    sku: Optional[str] = None
+    description: Optional[str] = None
+    image_url: Optional[str] = None
+    created_at: Optional[datetime] = None
+    category: Optional[PriceCategoryOut] = None
+    offers: List[ProductOfferOut] = []
     model_config = {"from_attributes": True}
 
 

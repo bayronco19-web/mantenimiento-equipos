@@ -12,6 +12,7 @@ import Lifecycle from './pages/Lifecycle'
 import AlertsPage from './pages/AlertsPage'
 import Users from './pages/Users'
 import EquipmentScan from './pages/EquipmentScan'
+import PriceComparison from './pages/PriceComparison'
 
 function RequireAuth({ children }: { children: React.ReactNode }) {
   const token = localStorage.getItem('token')
@@ -33,6 +34,7 @@ export default function App() {
           <Route path="work-orders" element={<WorkOrders />} />
           <Route path="schedule" element={<Schedule />} />
           <Route path="inventory" element={<Inventory />} />
+          <Route path="price-comparison" element={<PriceComparison />} />
           <Route path="lifecycle/:id" element={<Lifecycle />} />
           <Route path="alerts" element={<AlertsPage />} />
           <Route path="users" element={<Users />} />

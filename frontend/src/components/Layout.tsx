@@ -2,7 +2,7 @@ import { Outlet, NavLink, useNavigate } from 'react-router-dom'
 import { useQuery } from '@tanstack/react-query'
 import {
   LayoutDashboard, Wrench, ClipboardList, Calendar, Package,
-  BookOpen, Bell, Users, LogOut, Settings, ChevronRight, AlertTriangle
+  BookOpen, Bell, Users, LogOut, Settings, ChevronRight, AlertTriangle, Tags
 } from 'lucide-react'
 import { alertsApi } from '../api/client'
 import clsx from 'clsx'
@@ -13,6 +13,7 @@ const navItems = [
   { to: '/work-orders', icon: ClipboardList, label: 'Órdenes de Trabajo' },
   { to: '/schedule', icon: Calendar, label: 'Cronograma' },
   { to: '/inventory', icon: Package, label: 'Inventario' },
+  { to: '/price-comparison', icon: Tags, label: 'Comparador de Precios' },
   { to: '/alerts', icon: Bell, label: 'Alertas', badge: true },
   { to: '/users', icon: Users, label: 'Usuarios' },
 ]

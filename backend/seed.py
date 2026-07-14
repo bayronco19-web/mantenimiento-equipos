@@ -13,6 +13,10 @@ models.Base.metadata.create_all(bind=engine)
 
 def reset_db(db):
     """Borra todos los datos en orden correcto (respetando FK)."""
+    db.query(models.ProductOffer).delete()
+    db.query(models.Product).delete()
+    db.query(models.Store).delete()
+    db.query(models.PriceCategory).delete()
     db.query(models.Alert).delete()
     db.query(models.EquipmentLifecycle).delete()
     db.query(models.WorkOrderSparePart).delete()
@@ -611,6 +615,100 @@ def seed():
 
         db.commit()
 
+        # ─── COMPARADOR DE PRECIOS ──────────────────────────────────────────
+        price_categories = [
+            models.PriceCategory(name="Repuestos Industriales", icon="cog"),
+            models.PriceCategory(name="Herramientas", icon="wrench"),
+            models.PriceCategory(name="Insumos y Consumibles", icon="package"),
+            models.PriceCategory(name="Instrumentos de Medición", icon="gauge"),
+        ]
+        for c in price_categories:
+            db.add(c)
+        db.commit()
+
+        stores = [
+            models.Store(name="MercadoLibre", store_type=models.StoreType.hybrid,
+                         website_url="https://www.mercadolibre.com", reputation_rating=4.4,
+                         reputation_reviews_count=185000),
+            models.Store(name="Amazon", store_type=models.StoreType.online,
+                         website_url="https://www.amazon.com", reputation_rating=4.6,
+                         reputation_reviews_count=520000),
+            models.Store(name="AliExpress", store_type=models.StoreType.online,
+                         website_url="https://www.aliexpress.com", reputation_rating=4.1,
+                         reputation_reviews_count=98000),
+            models.Store(name="Falabella", store_type=models.StoreType.hybrid,
+                         website_url="https://www.falabella.com", reputation_rating=4.2,
+                         reputation_reviews_count=32000),
+            models.Store(name="Ferretería Industrial El Tornillo", store_type=models.StoreType.physical,
+                         website_url="https://www.eltornillo.com", reputation_rating=4.7,
+                         reputation_reviews_count=1200),
+        ]
+        for s in stores:
+            db.add(s)
+        db.commit()
+
+        products = [
+            models.Product(name="Multímetro Digital Fluke 117", category_id=price_categories[3].id,
+                            brand="Fluke", sku="FLK-117",
+                            description="Multímetro digital True RMS para electricistas, con detección de tensión sin contacto.",
+                            image_url="https://images.unsplash.com/photo-1581092160607-ee22621dd758?w=400"),
+            models.Product(name="Juego de Llaves Combinadas 8-19mm", category_id=price_categories[1].id,
+                            brand="Stanley", sku="STN-KIT8-19",
+                            description="Set de 8 llaves combinadas cromo-vanadio, tamaños 8mm a 19mm.",
+                            image_url="https://images.unsplash.com/photo-1581147036324-c1c8e04a4b6a?w=400"),
+            models.Product(name="Rodamiento SKF 6205-2RS", category_id=price_categories[0].id,
+                           brand="SKF", sku="SKF-6205-2RS",
+                            description="Rodamiento rígido de bolas sellado, 25x52x15mm.",
+                            image_url="https://images.unsplash.com/photo-1615906655593-ad0386982a0f?w=400"),
+            models.Product(name="Grasa Industrial Multiuso 400g", category_id=price_categories[2].id,
+                            brand="Mobil", sku="MBL-GR400",
+                            description="Grasa lubricante multiuso de litio para rodamientos y componentes mecánicos.",
+                            image_url="https://images.unsplash.com/photo-1621905251189-08b45d6a269e?w=400"),
+        ]
+        for p in products:
+            db.add(p)
+        db.commit()
+
+        offers = [
+            # Multímetro Fluke 117
+            models.ProductOffer(product_id=products[0].id, store_id=stores[1].id, price=289.99, currency="USD",
+                                 product_url="https://www.amazon.com/dp/B00APFXFHY", in_stock=True),
+            models.ProductOffer(product_id=products[0].id, store_id=stores[0].id, price=265.50, currency="USD",
+                                 seller_name="ElectroImportadora CO", product_url="https://articulo.mercadolibre.com.co/MCO-fluke-117",
+                                 in_stock=True, reputation_rating=4.6, reputation_reviews_count=3400),
+            models.ProductOffer(product_id=products[0].id, store_id=stores[3].id, price=310.00, currency="USD",
+                                 product_url="https://www.falabella.com/falabella-cl/product/fluke-117", in_stock=False),
+
+            # Juego de llaves Stanley
+            models.ProductOffer(product_id=products[1].id, store_id=stores[2].id, price=34.90, currency="USD",
+                                 seller_name="Global Tools Store", product_url="https://www.aliexpress.com/item/stanley-kit8-19",
+                                 in_stock=True, reputation_rating=4.3, reputation_reviews_count=15200),
+            models.ProductOffer(product_id=products[1].id, store_id=stores[0].id, price=42.75, currency="USD",
+                                 seller_name="Herramientas del Valle", product_url="https://articulo.mercadolibre.com.co/MCO-stanley-kit8-19",
+                                 in_stock=True, reputation_rating=4.5, reputation_reviews_count=890),
+            models.ProductOffer(product_id=products[1].id, store_id=stores[4].id, price=45.00, currency="USD",
+                                 product_url="https://www.eltornillo.com/producto/stanley-kit8-19", in_stock=True),
+
+            # Rodamiento SKF
+            models.ProductOffer(product_id=products[2].id, store_id=stores[4].id, price=12.50, currency="USD",
+                                 product_url="https://www.eltornillo.com/producto/skf-6205-2rs", in_stock=True),
+            models.ProductOffer(product_id=products[2].id, store_id=stores[2].id, price=9.80, currency="USD",
+                                 seller_name="Bearing World", product_url="https://www.aliexpress.com/item/skf-6205-2rs",
+                                 in_stock=True, reputation_rating=4.0, reputation_reviews_count=6700),
+            models.ProductOffer(product_id=products[2].id, store_id=stores[1].id, price=15.99, currency="USD",
+                                 product_url="https://www.amazon.com/dp/skf-6205-2rs", in_stock=True),
+
+            # Grasa Mobil
+            models.ProductOffer(product_id=products[3].id, store_id=stores[3].id, price=8.90, currency="USD",
+                                 product_url="https://www.falabella.com/falabella-cl/product/mobil-grasa-400g", in_stock=True),
+            models.ProductOffer(product_id=products[3].id, store_id=stores[0].id, price=7.60, currency="USD",
+                                 seller_name="Lubricantes Industriales SAS", product_url="https://articulo.mercadolibre.com.co/MCO-mobil-grasa-400g",
+                                 in_stock=True, reputation_rating=4.8, reputation_reviews_count=2100),
+        ]
+        for o in offers:
+            db.add(o)
+        db.commit()
+
         print("\n=== DATOS CARGADOS EXITOSAMENTE ===\n")
         print("EQUIPOS:")
         print("  CAL-001 - Caldera Pirotubular Cleaver Brooks 200 BHP")
@@ -620,6 +718,7 @@ def seed():
         print("\nHERRAMIENTAS: 25 herramientas cargadas")
         print("INSUMOS: 15 insumos/consumibles cargados")
         print("PLANES: 5 planes de mantenimiento con herramientas e insumos asignados")
+        print("COMPARADOR DE PRECIOS: 4 productos, 5 tiendas, 11 ofertas cargadas")
         print("\nUSUARIOS:")
         print("  admin / admin123       -> Administrador")
         print("  supervisor1 / super123 -> Supervisor")

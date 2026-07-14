@@ -127,6 +127,28 @@ export const dashboardApi = {
   upcomingMaintenance: (days?: number) => api.get('/dashboard/upcoming-maintenance', { params: { days } }),
 }
 
+// ─── COMPARADOR DE PRECIOS ───────────────────────────────────────────────────
+export const priceComparisonApi = {
+  listCategories: () => api.get('/price-comparison/categories/'),
+  createCategory: (data: object) => api.post('/price-comparison/categories/', data),
+  deleteCategory: (id: number) => api.delete(`/price-comparison/categories/${id}`),
+
+  listStores: () => api.get('/price-comparison/stores/'),
+  createStore: (data: object) => api.post('/price-comparison/stores/', data),
+  updateStore: (id: number, data: object) => api.put(`/price-comparison/stores/${id}`, data),
+  deleteStore: (id: number) => api.delete(`/price-comparison/stores/${id}`),
+
+  listProducts: (params?: object) => api.get('/price-comparison/products/', { params }),
+  getProduct: (id: number) => api.get(`/price-comparison/products/${id}`),
+  createProduct: (data: object) => api.post('/price-comparison/products/', data),
+  updateProduct: (id: number, data: object) => api.put(`/price-comparison/products/${id}`, data),
+  deleteProduct: (id: number) => api.delete(`/price-comparison/products/${id}`),
+
+  createOffer: (productId: number, data: object) => api.post(`/price-comparison/products/${productId}/offers`, data),
+  updateOffer: (id: number, data: object) => api.put(`/price-comparison/offers/${id}`, data),
+  deleteOffer: (id: number) => api.delete(`/price-comparison/offers/${id}`),
+}
+
 // ─── REPORTS ─────────────────────────────────────────────────────────────────
 const downloadBlob = async (url: string, filename: string) => {
   const res = await api.get(url, { responseType: 'blob' })
