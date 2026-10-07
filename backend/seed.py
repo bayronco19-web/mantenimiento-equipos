@@ -84,6 +84,7 @@ def seed():
             models.EquipmentCategory(name="Quemadores", description="Sistemas de combustión a gas", icon="zap"),
             models.EquipmentCategory(name="Vaporizadores", description="Vaporizadores y evaporadores de gas", icon="wind"),
             models.EquipmentCategory(name="Dispensadores de Gas", description="Dispensadores y surtidores de GLP y gas natural", icon="droplets"),
+            models.EquipmentCategory(name="Estación AutoGLP", description="Equipos de estación de servicio de GLP vehicular (NFPA 58 / NTC 3853-1)", icon="fuel"),
         ]
         for c in cats:
             db.add(c)
@@ -142,6 +143,48 @@ def seed():
                 description="Dispensador de GLP para carga de cilindros y vehículos. "
                             "Sistema de medición fiscal con totalizador. Manguera retráctil de alta presión.",
                 technical_specs='{"caudal": "80 L/min", "presion_trabajo": "8 bar", "medicion": "Fiscal certificada", "display": "LCD Iluminado", "voltaje": "110V / 60Hz"}',
+            ),
+            models.Equipment(
+                code="AGL-001", name="Tanque Estacionario AutoGLP 5.000 gal", category_id=cats[4].id,
+                brand="Fabricación nacional ASME", model="ASME VIII Div.1 - 250 psig", serial_number="TQ2022-5000-001",
+                location="Estación AutoGLP - Zona de almacenamiento", area="AutoGLP",
+                status=models.EquipmentStatus.active, criticality=models.Criticality.high,
+                purchase_date=date(2022, 2, 10), installation_date=date(2022, 4, 1),
+                warranty_expiry=today + timedelta(days=200),
+                last_maintenance=today - timedelta(days=25),
+                next_maintenance=today + timedelta(days=5),
+                description="Tanque horizontal aéreo para almacenamiento de GLP de la estación AutoGLP. "
+                            "Válvula interna con cierre de emergencia, válvula de alivio de presión, "
+                            "indicador de nivel tipo flotador y válvula de máximo llenado (80%).",
+                technical_specs='{"capacidad_agua": "5000 gal (18.9 m3)", "presion_diseno": "250 psig", "llenado_max": "80% volumen", "valvula_alivio": "Calibrada a 250 psig", "norma_diseno": "ASME Sec. VIII Div. 1", "puesta_tierra": "Sí"}',
+            ),
+            models.Equipment(
+                code="AGL-002", name="Bomba de Paletas AutoGLP Corken Z2000", category_id=cats[4].id,
+                brand="Corken", model="Z2000", serial_number="COR2022-Z2-001",
+                location="Estación AutoGLP - Patio de bombas", area="AutoGLP",
+                status=models.EquipmentStatus.active, criticality=models.Criticality.high,
+                purchase_date=date(2022, 2, 10), installation_date=date(2022, 4, 1),
+                warranty_expiry=today + timedelta(days=200),
+                last_maintenance=today - timedelta(days=40),
+                next_maintenance=today + timedelta(days=50),
+                description="Bomba de desplazamiento positivo de paletas deslizantes para trasiego de GLP "
+                            "líquido del tanque al surtidor. Motor a prueba de explosión y válvula de bypass "
+                            "diferencial de retorno al tanque.",
+                technical_specs='{"tipo": "Paletas deslizantes", "motor": "Antiexplosivo Clase I Div.1 Grupo D", "voltaje": "220/440V / 60Hz", "bypass": "Válvula diferencial retorno a tanque", "sello": "Mecánico"}',
+            ),
+            models.Equipment(
+                code="AGL-003", name="Surtidor AutoGLP Doble Manguera", category_id=cats[4].id,
+                brand="Adast", model="Adamat LPG", serial_number="ADA2022-LPG-001",
+                location="Estación AutoGLP - Isla de despacho 1", area="AutoGLP",
+                status=models.EquipmentStatus.active, criticality=models.Criticality.high,
+                purchase_date=date(2022, 2, 10), installation_date=date(2022, 4, 1),
+                warranty_expiry=today + timedelta(days=200),
+                last_maintenance=today - timedelta(days=15),
+                next_maintenance=today + timedelta(days=15),
+                description="Surtidor de GLP vehicular con medidor másico/volumétrico, separador de gas, "
+                            "válvula diferencial, acople de desconexión rápida (breakaway) y boquilla de "
+                            "llenado AutoGLP con cierre automático.",
+                technical_specs='{"mangueras": "2", "medicion": "Fiscal con compensación de temperatura", "breakaway": "Sí", "boquilla": "Llenado AutoGLP con cierre automático", "electrica": "Clasificación área peligrosa IEC 60079", "voltaje": "110V / 60Hz"}',
             ),
         ]
         for eq in equipment_list:
@@ -306,6 +349,24 @@ def seed():
                               unit="unidad", stock_quantity=6, min_stock=3, max_stock=15,
                               unit_cost=32.00, supplier="Gilbarco Parts", location="Bodega Repuestos",
                               description="Filtra GLP líquido antes del medidor de caudal. Cambiar cada 6 meses"),
+
+            # Estación AutoGLP
+            models.Consumable(code="INS-016", name="Juego de Paletas Bomba Corken Z2000", category="Repuestos Menores",
+                              unit="juego", stock_quantity=2, min_stock=1, max_stock=4,
+                              unit_cost=180.00, supplier="Corken Colombia", location="Bodega Repuestos",
+                              description="Paletas de repuesto para bomba de GLP. Reemplazar según desgaste medido"),
+            models.Consumable(code="INS-017", name="Sello Mecánico Bomba Corken Z2000", category="Repuestos Menores",
+                              unit="unidad", stock_quantity=1, min_stock=1, max_stock=3,
+                              unit_cost=250.00, supplier="Corken Colombia", location="Bodega Repuestos",
+                              description="Sello mecánico para servicio GLP. Cambiar ante goteo o fuga en el eje"),
+            models.Consumable(code="INS-018", name="Boquilla de Llenado AutoGLP", category="Repuestos Menores",
+                              unit="unidad", stock_quantity=2, min_stock=1, max_stock=4,
+                              unit_cost=210.00, supplier="Adast Parts", location="Bodega Repuestos",
+                              description="Boquilla de despacho vehicular con cierre automático. Reemplazar ante fuga o daño"),
+            models.Consumable(code="INS-019", name="Solución Detectora de Fugas (Burbujas)", category="Seguridad",
+                              unit="litros", stock_quantity=4, min_stock=2, max_stock=10,
+                              unit_cost=9.00, supplier="Industrial Supply", location="Bodega Química",
+                              description="Solución no corrosiva para verificación de estanqueidad en conexiones GLP"),
         ]
         for c in consumables:
             db.add(c)
@@ -532,6 +593,151 @@ def seed():
         ]):
             db.add(models.ChecklistItem(plan_id=plan_dis_semestral.id, description=desc, category=cat, order=i, is_required=True))
 
+        # PLAN 6 — AUTOGLP TANQUE: Inspección Mensual
+        plan_agl_tanque = models.MaintenancePlan(
+            equipment_id=equipment_list[4].id,
+            name="Inspección Mensual Tanque AutoGLP",
+            type=models.MaintenanceType.inspection, frequency_days=30,
+            estimated_duration_hours=2.0, next_scheduled=today + timedelta(days=5),
+            description="Inspección visual y funcional del tanque estacionario y sus accesorios "
+                        "(válvulas, indicadores, puesta a tierra, señalización). Ref.: NFPA 58, NTC 3853-1.",
+            procedure=(
+                "1. Verificar señalización, extintores y ausencia de fuentes de ignición en el área\n"
+                "2. Recorrer el perímetro con detector de fugas electrónico\n"
+                "3. Registrar presión (manómetro) y nivel (indicador de flotador)\n"
+                "4. Verificar que el nivel no supere el 80% (válvula de máximo llenado)\n"
+                "5. Inspeccionar válvula de alivio: capuchón de lluvia, sin obstrucción ni corrosión\n"
+                "6. Verificar operación del cierre de emergencia de la válvula interna\n"
+                "7. Inspeccionar corrosión de cuerpo, silletas, pintura y pernos de anclaje\n"
+                "8. Medir continuidad de la puesta a tierra con multímetro\n"
+                "9. Aplicar solución detectora en conexiones roscadas y bridadas\n"
+                "10. Registrar hallazgos en bitácora"
+            ),
+            safety_notes=(
+                "PELIGRO GLP: Recipiente a presión. No aflojar conexiones con el tanque presurizado.\n"
+                "Área clasificada: solo herramientas y equipos aptos para atmósfera explosiva.\n"
+                "Extintor PQS a menos de 5 m. Prohibido fumar o usar celular en el área.\n"
+                "Acceso a válvulas superiores a 2,0 m o más: aplicar Res. 4272/2021 (trabajo en alturas)."
+            ),
+        )
+        db.add(plan_agl_tanque)
+        db.flush()
+        for tid, qty in [(tools[13].id, 1), (tools[14].id, 1), (tools[18].id, 1), (tools[8].id, 1)]:
+            db.add(models.PlanTool(plan_id=plan_agl_tanque.id, tool_id=tid, quantity=qty))
+        for cid, qty in [(consumables[18].id, 1)]:
+            db.add(models.PlanConsumable(plan_id=plan_agl_tanque.id, consumable_id=cid, quantity=qty))
+        for i, (desc, cat) in enumerate([
+            ("Área libre de fuentes de ignición, señalización y extintor PQS disponibles", "safety"),
+            ("Recorrido con detector de fugas sin lecturas positivas", "safety"),
+            ("Registrar presión del tanque y nivel de llenado", "quality"),
+            ("Nivel de llenado menor o igual al 80%", "quality"),
+            ("Válvula de alivio con capuchón y descarga sin obstrucción", "procedure"),
+            ("Prueba funcional del cierre de emergencia de válvula interna", "safety"),
+            ("Sin corrosión significativa en cuerpo, silletas y anclajes", "quality"),
+            ("Continuidad de puesta a tierra verificada", "safety"),
+            ("Conexiones sin fuga (prueba con solución detectora)", "safety"),
+        ]):
+            db.add(models.ChecklistItem(plan_id=plan_agl_tanque.id, description=desc, category=cat, order=i, is_required=True))
+
+        # PLAN 7 — AUTOGLP BOMBA: Mantenimiento Trimestral
+        plan_agl_bomba = models.MaintenancePlan(
+            equipment_id=equipment_list[5].id,
+            name="PM Trimestral Bomba AutoGLP",
+            type=models.MaintenanceType.preventive, frequency_days=90,
+            estimated_duration_hours=4.0, next_scheduled=today + timedelta(days=50),
+            description="Revisión de bomba de paletas: sello mecánico, paletas, rodamientos, acople, "
+                        "motor antiexplosivo y ajuste de válvula de bypass.",
+            procedure=(
+                "1. Aislar eléctricamente (LOTO en arrancador del motor)\n"
+                "2. Cerrar válvulas de succión y descarga; aliviar presión al tanque por línea de retorno\n"
+                "3. Verificar ausencia de GLP con detector de fugas antes de abrir\n"
+                "4. Inspeccionar sello mecánico - reemplazar si hay goteo\n"
+                "5. Desmontar tapa y medir desgaste de paletas - reemplazar si están fuera de tolerancia del fabricante\n"
+                "6. Revisar alineación y estado del acople\n"
+                "7. Medir corriente del motor con pinza amperimétrica y comparar con placa\n"
+                "8. Verificar prensaestopas y sellos de la caja de conexiones antiexplosiva\n"
+                "9. Rearmar con torque del fabricante y abrir válvulas lentamente\n"
+                "10. Verificar fugas y ajustar válvula de bypass según presión diferencial del fabricante\n"
+                "11. Registrar presiones de succión y descarga"
+            ),
+            safety_notes=(
+                "PELIGRO ELÉCTRICO + GLP: Procedimiento LOTO obligatorio.\n"
+                "Caja de conexiones antiexplosiva: no abrir energizada; verificar sellos al cerrar.\n"
+                "El GLP líquido al liberarse causa quemaduras por frío: guantes y careta.\n"
+                "Ventilar el área; el GLP se acumula en zonas bajas."
+            ),
+        )
+        db.add(plan_agl_bomba)
+        db.flush()
+        for tid, qty in [(tools[13].id, 1), (tools[14].id, 1), (tools[20].id, 1),
+                         (tools[23].id, 1), (tools[8].id, 1), (tools[17].id, 1),
+                         (tools[18].id, 1)]:
+            db.add(models.PlanTool(plan_id=plan_agl_bomba.id, tool_id=tid, quantity=qty))
+        for cid, qty in [(consumables[15].id, 1), (consumables[16].id, 1),
+                         (consumables[9].id, 1), (consumables[18].id, 1)]:
+            db.add(models.PlanConsumable(plan_id=plan_agl_bomba.id, consumable_id=cid, quantity=qty))
+        for i, (desc, cat) in enumerate([
+            ("LOTO aplicado en arrancador del motor", "safety"),
+            ("Válvulas de succión y descarga cerradas y presión aliviada", "safety"),
+            ("Sello mecánico sin goteo (reemplazado si aplica)", "quality"),
+            ("Desgaste de paletas dentro de tolerancia del fabricante", "quality"),
+            ("Corriente del motor dentro del valor de placa", "quality"),
+            ("Caja antiexplosiva con sellos y tornillería completos", "safety"),
+            ("Bypass ajustado y presiones registradas", "procedure"),
+            ("Sin fugas al restablecer servicio", "safety"),
+        ]):
+            db.add(models.ChecklistItem(plan_id=plan_agl_bomba.id, description=desc, category=cat, order=i, is_required=True))
+
+        # PLAN 8 — AUTOGLP SURTIDOR: Mantenimiento Mensual
+        plan_agl_surtidor = models.MaintenancePlan(
+            equipment_id=equipment_list[6].id,
+            name="PM Mensual Surtidor AutoGLP",
+            type=models.MaintenanceType.preventive, frequency_days=30,
+            estimated_duration_hours=3.0, next_scheduled=today + timedelta(days=15),
+            description="Mantenimiento del surtidor AutoGLP: manguera, breakaway, boquilla, filtro, "
+                        "separador de gas, medidor y paro de emergencia.",
+            procedure=(
+                "1. Accionar paro de emergencia y cerrar válvula de suministro al surtidor\n"
+                "2. Aliviar presión de la manguera de forma controlada\n"
+                "3. Inspeccionar manguera: sin grietas, ampollas, abrasión ni deformaciones; verificar fecha de fabricación\n"
+                "4. Inspeccionar acople breakaway: sin daños y correctamente anclado\n"
+                "5. Inspeccionar boquilla: sello, gatillo y cierre automático\n"
+                "6. Limpiar o reemplazar filtro de entrada\n"
+                "7. Verificar prensaestopas y sellos de los compartimentos eléctricos (área clasificada)\n"
+                "8. Restablecer suministro y verificar fugas con detector y solución detectora\n"
+                "9. Prueba de despacho con medida patrón y registro del error del medidor\n"
+                "10. Probar paro de emergencia de la isla\n"
+                "11. Registrar en bitácora"
+            ),
+            safety_notes=(
+                "PELIGRO GLP: Isla de despacho es área clasificada (IEC 60079 / RETIE).\n"
+                "Suspender despacho a vehículos durante la intervención y señalizar la isla.\n"
+                "Guantes y careta al aliviar presión (riesgo de quemadura por frío).\n"
+                "Extintor PQS a menos de 5 m."
+            ),
+        )
+        db.add(plan_agl_surtidor)
+        db.flush()
+        for tid, qty in [(tools[21].id, 1), (tools[13].id, 1), (tools[24].id, 1),
+                         (tools[23].id, 1), (tools[9].id, 1), (tools[14].id, 1)]:
+            db.add(models.PlanTool(plan_id=plan_agl_surtidor.id, tool_id=tid, quantity=qty))
+        for cid, qty in [(consumables[14].id, 1), (consumables[12].id, 1),
+                         (consumables[13].id, 1), (consumables[18].id, 1)]:
+            db.add(models.PlanConsumable(plan_id=plan_agl_surtidor.id, consumable_id=cid, quantity=qty))
+        for i, (desc, cat) in enumerate([
+            ("Paro de emergencia accionado y suministro cerrado", "safety"),
+            ("Isla señalizada y despacho a vehículos suspendido", "safety"),
+            ("Manguera sin grietas, ampollas ni abrasión", "quality"),
+            ("Breakaway sin daños y correctamente anclado", "quality"),
+            ("Boquilla con cierre automático funcional y sin fuga", "quality"),
+            ("Filtro de entrada limpio o reemplazado", "procedure"),
+            ("Sellos de compartimentos eléctricos completos", "safety"),
+            ("Sin fugas al restablecer servicio", "safety"),
+            ("Error del medidor dentro del error máximo permitido", "quality"),
+            ("Prueba funcional del paro de emergencia de la isla", "safety"),
+        ]):
+            db.add(models.ChecklistItem(plan_id=plan_agl_surtidor.id, description=desc, category=cat, order=i, is_required=True))
+
         # ─── ÓRDENES DE TRABAJO ───────────────────────────────────────────────
         wo1 = models.WorkOrder(
             order_number="OT-2024-0001", equipment_id=equipment_list[0].id,
@@ -572,6 +778,16 @@ def seed():
             description="PM Trimestral Vaporizador - Revisión resistencias y baño de agua",
         )
         db.add(wo4)
+
+        wo5 = models.WorkOrder(
+            order_number="OT-2024-0005", equipment_id=equipment_list[4].id,
+            plan_id=plan_agl_tanque.id, type=models.MaintenanceType.inspection,
+            priority=models.WorkOrderPriority.high, status=models.WorkOrderStatus.pending,
+            scheduled_date=today + timedelta(days=5), technician_id=users[3].id,
+            supervisor_id=users[1].id,
+            description="Inspección Mensual Tanque AutoGLP - Válvulas, nivel, puesta a tierra y fugas",
+        )
+        db.add(wo5)
 
         # ─── HOJA DE VIDA (LIFECYCLE) ─────────────────────────────────────────
         lifecycle_entries = [
@@ -617,9 +833,12 @@ def seed():
         print("  QUE-001 - Quemador Baltur TBG 450 P")
         print("  VAP-001 - Vaporizador Eléctrico Algas SDI-500")
         print("  DIS-001 - Dispensador GLP Gilbarco E700")
+        print("  AGL-001 - Tanque Estacionario AutoGLP 5.000 gal")
+        print("  AGL-002 - Bomba de Paletas AutoGLP Corken Z2000")
+        print("  AGL-003 - Surtidor AutoGLP Doble Manguera Adast")
         print("\nHERRAMIENTAS: 25 herramientas cargadas")
-        print("INSUMOS: 15 insumos/consumibles cargados")
-        print("PLANES: 5 planes de mantenimiento con herramientas e insumos asignados")
+        print("INSUMOS: 19 insumos/consumibles cargados")
+        print("PLANES: 8 planes de mantenimiento con herramientas e insumos asignados")
         print("\nUSUARIOS:")
         print("  admin / admin123       -> Administrador")
         print("  supervisor1 / super123 -> Supervisor")
